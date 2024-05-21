@@ -1,8 +1,9 @@
 from instantneo.core import InstantNeo
 import openai
+import os
 
 # This is the OpenAI API key used to authenticate requests.
-api_key = "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"
+api_key = os.getenv("OPENAI_API_KEY")
 model = "gpt-3.5-turbo"
 
 # Initialize the InstantNeo client.
