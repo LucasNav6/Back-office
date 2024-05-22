@@ -14,5 +14,6 @@ pkgs.mkShell {
     source .venv/bin/activate
     pip install --upgrade pip
     pip install git+https://github.com/dponcedeleonf/instantneo.git
+    pip install python-dotenv
   '';
 }

@@ -1,11 +1,15 @@
 from instantneo.core import InstantNeo
+from dotenv import load_dotenv
 import openai
 import os
 
-# This is the OpenAI API key used to authenticate requests.
-api_key = os.getenv("OPENAI_API_KEY")
-model = "gpt-3.5-turbo"
+# Cargar el .env
+load_dotenv()
+IA_API_KEY = os.getenv('OPENAI_API_KEY')
 
+# This is the OpenAI API key used to authenticate requests.
+api_key = IA_API_KEY
+model = "gpt-3.5-turbo"
 # Initialize the InstantNeo client.
 role_neo = """
 ## Contexto
@@ -63,4 +67,3 @@ respuesta_neo = neo.run("""
     "Cuerpo": "Estimado usuario, \n\n¡Felicidades! Ha sido seleccionado para ganar un viaje todo pagado a las Bahamas. Solo necesita hacer clic en el siguiente enlace y completar una breve encuesta para reclamar su premio. \n\nNo pierda esta increíble oportunidad de disfrutar de unas vacaciones de ensueño. ¡Haga clic ahora y gane! \n\nSaludos, \n\nEl Equipo de Promociones"
   }
 """) # RTA: SPAN
-print(respuesta_neo)
