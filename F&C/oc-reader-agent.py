@@ -32,9 +32,12 @@ role_antropic = """
         Incluirla en el formato DD-MM-YYYY
     - Forma de pago: Escribir la información que proporciona sobre la forma de pago del contrato.
         Incluir información sobre la divisa a usar, esta puede ser "SOLES" o "DOLARES AMERICANO"
+        [SOLO usar "SOLES" o "DOLARES AMERICANO"]
         Buscar si especifica la forma de pago a usar como por ejemplo "Pago mensual"
+    - Total a pagar: Buscar en el documento la cantidad que debe pagar el cliente, asegurarse que ese total tenga
+        incluido todos los impuestos como (IGV) y descuentos.
     - Comentario adicional: En caso de haber alguna información particular MUY RELEVANTE, como
-        ampliaciones. De lo contrario dejar el campo vacio
+        ampliaciones. De lo contrario dejar el campo vacio. Debe ser muy corto y conciso
 
     ##! Formato de respuesta esperado
     La respuesta otorgada debe ser SIEMPRE en este formato
@@ -43,8 +46,9 @@ role_antropic = """
         "fin_contrato": "DD-MM-YYYY" ó "No especificado",
         "divisa": "SOLES" ó "DOLARES AMERICANO" ó "No especificado",
         "forma_pago": [texto] ó "No especificado",
+        "total_pagar": [numero] ó "No especificado",
         "comentario_adiciónal": ""
-        "campos_completos": [Booleano]
+        "campos_completos": [True] o [False]
     }
     [NOTA: No otorgar NINGUNA otra información adicional]
     [NOTA: La sección de comentario debe contener unicamente información adicional, no repetir]
@@ -55,7 +59,9 @@ role_antropic = """
     - Sin algun dato no se encunetra la información, completar con "No especificado"
     - Se te va a proporcionar en algunos casos datos iniciales, tomar en cuenta esos datos para completarlos SIEMPRE.
         Por ejemplo: Si se pasa como dato inicial que la fecha inicial es 01-01-2000, agregar ese dato en la respuesta
-    - La respuesta debe estar siempre en JSON
+    - La respuesta debe estar siempre en formato "JSON" que se encuentra entre llaves "{ }"
+        No incluir ningun otro texto adicional, como "Basado en la información proporcionada... "
+        y/o pensamientos o congeturas
 """
 
 # Para crear la instancia necesitas llamar al adaptador en los parámetros
@@ -106,6 +112,7 @@ if __name__ == "__main__":
         
         ultima_respuesta_json = None
         if ultima_respuesta:
+            print(ultima_respuesta)
             ultima_respuesta_json = json.loads(ultima_respuesta)
             if ultima_respuesta_json['campos_completos']:
                 print("\nRESPUESTA:\n" + ultima_respuesta)
