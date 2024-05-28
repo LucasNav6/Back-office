@@ -14,6 +14,9 @@ pkgs.mkShell {
     source .venv/bin/activate
     pip install --upgrade pip
     pip install git+https://github.com/dponcedeleonf/instantneo.git
+    pip install git+https://github.com/dponcedeleonf/instantneo.git@desarrollo
     pip install python-dotenv
+    pip install PyPDF2
+    pip install flask PyMuPDF pillow
   '';
 }
