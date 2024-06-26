@@ -17,6 +17,9 @@ pkgs.mkShell {
     pip install git+https://github.com/dponcedeleonf/instantneo.git@desarrollo
     pip install python-dotenv
     pip install PyPDF2
-    pip install flask PyMuPDF pillow
+    pip install flask
+    pip install PyMuPDF
+    pip install pillow
+    pip install request
   '';
 }

@@ -30,6 +30,14 @@ agent_classifier_role = """
   formales y detalles específicos sobre productos o servicios adquiridos, plazos de entrega,
   y condiciones de pago.
 
+  Categoria: "CONFIRMACIÓN ORDEN DE COMPRA"
+  Descripción: Correos electrónicos que contienen la aceptación o negación del detalle de orden de compra,
+  enviado anteriormente
+
+  Categoria: "SOLICITUD CAMBIO ORDEN DE COMPRA"
+  Descripción: Correos electrónicos que contienen la aceptación o negación del detalle de orden de compra,
+  enviado anteriormente
+
   Categoría: "OTROS"
   Descripción: Correos electrónicos que no encajan en ninguna de las categorías anteriores.
   Esta categoría incluye cualquier tipo de comunicación que no sea claramente identificable.
@@ -47,6 +55,18 @@ agent_classifier_role = """
       "Cuerpo": "Tu compra ha sido enviada. Aquí están los detalles de tu pedido.",
   }
   Salida: ORDEN DE COMPRA
+
+  Entrada: {
+      "Titulo": "Confirmación de orden Nro FF01-4111",
+      "Cuerpo": "Estimados, Recibimos la orden de compra.",
+  }
+  Salida: CONFIRMACIÓN ORDEN DE COMPRA
+
+  Entrada: {
+      "Titulo": "Orden Nro FF01-4111",
+      "Cuerpo": "Estimados, Tras una revisión exhaustiva, encontramos los siguientes detalles a modificar. Adjunto las correcciones",
+  }
+  Salida: SOLICITUD CAMBIO ORDEN DE COMPRA
 
 
   ##! Restricciones

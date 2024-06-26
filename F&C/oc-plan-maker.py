@@ -8,13 +8,15 @@ import json
 # Esta respuesta se consigue al correr: oc-reader-agent.py
 # ! BORRAR
 respuesta_anterior = {
-    "inicio_contrato": "02.05.2024",
-    "fin_contrato": "10.01.2026",
-    "divisa": "DOLARES AMERICANO",
-    "forma_pago": "4 Cuotas",
-    "total_pagar": 101290.10,
-    "comentario_adicional": "El Contrato tendrá una vigencia desde el 01 de mayo de 2024 al 30 de abril del 2026. No obstante, a lo señalado en el numeral anterior, ambas PARTES por común acuerdo podrán prorrogar o ampliar el plazo estipulado en la presente cláusula, con una anticipación no menor a quince (15) días calendario de la fecha de vencimiento del presente Contrato, señalando el nuevo plazo para la ampliación de arrendamiento correspondiente.",
-    "campos_completos": True
+    "inicio_contrato": "01-05-2024",
+    "fin_contrato": "30-04-2026",
+    "divisa": "SOLES",
+    "forma_pago": "90 días",
+    "total_pagar": "76,322.40",
+    "cliente_nombre": "CORPORACIÓN ACEROS AREQUIPA S.A.",
+    "cliente_ruc": "20370146994",
+    "cliente_direccion": "Av. ARGENTINA 5682 Callao - CALLAO",
+    "comentario_adiciónal": "La fecha de finalización podría extenderse por común acuerdo entre las partes."
 }
 
 # Cargar las variables de entorno desde el archivo .env
@@ -33,18 +35,13 @@ agent_classifier_role = """
   Tu tarea es generar un JSON con la información provista, donde contemple los ciclos
   de facturación. La respuesta debe contener la siguiente información:
 
-    - Periodo: El periodo se comprende entre la fecha de incio a fecha de fin.
-        [NOTA: La fechas deben ser retornadas del formato DD/MM/YYYY]
-    
-    - Pagos: La fechas de los pagos deben ser calculados teniendo en cuenta a la 
-        "forma de pago" proporcionada. Es decir, si dice mensual, es una por cada mes.
-        [Agregar siempre la divisa adelante, ejemplo si es "SOLES" usar S/, si es "Dólares" usar USD/]
-
-    - Categoria: Las unicas categorias permitidas son: "Inicio", "Entregable", "Culminación".
-        Elegir la que mejor se adapte en cada caso.
-    
-    - Concepto: El conceptos permitidos son: "Pago de inicio de contrato", "Entregable X", "Entregable final"
-        [NOTA: "X" hace referencia al número del entregables, modificar el parametro por un numero]
+  - Periodo: El periodo de facturación comprendido entre la fecha de inicio y fin de contrato.
+  - Pagos: Un array de objetos que contienen la siguiente información:
+    - Fecha: La fecha del pago
+    - Categoria: La categoría del pago, puede ser "Inicio", "Entregable" o "Culminación"
+    - Concepto: El concepto del pago
+    - Total: El total del pago
+  - Suma_pagos: La suma total de todos los pagos.
         
 
   ##! Ejemplos de respuestas deseadas
@@ -56,7 +53,6 @@ agent_classifier_role = """
         "forma_pago": "Pago mensual",
         "total_pagar": 76322.40,
         "comentario_adicional": "",
-        "campos_completos": true
     }
   Salida: {
     "periodo": "Periodo: Del 02/08/2020 al 02/10/2020"
@@ -83,41 +79,32 @@ agent_classifier_role = """
     "suma_pagos": "S/ 76322.40"
   }
 
-   ## Ejemplo 2 
+
+  ## Ejemplo 2
    Entrada: {
         "inicio_contrato": "01-09-2021",
         "fin_contrato": "No especificado",
-        "divisa": "DOLARES AMERICANO",
-        "forma_pago": "Pago contado",
-        "total_pagar": 10127.12,
+        "divisa": "SOLES",
+        "forma_pago": "No especificado",
+        "total_pagar": "No especificado",
         "comentario_adicional": "",
-        "campos_completos": true
     }
   Salida: {
-    "periodo": "Periodo: Del 02/08/2020 al (Sin especificar)"
-    "pagos": [
-        {
-            "fecha": "01/09/2021",
-            "categoria: "Inicio"
-            "concepto": "Pago de inicio de contrato",
-            "total": "USD/ 10127.12"
-        },
-    ],
-    "suma_pagos": "USD/ 10127.12"
+    "periodo": "Periodo: Del 01-09-2021 al (Sin información)"
+    "pagos": [],
+    "suma_pagos": "(Sin información)"
   }
-
-
-
   ## ! A TENER EN CUENTA
   - El metodo de pago "contado", se abonara en un solo pago, es decir en "pagos"
     debera haber un solo elemento con categoria "Inicio" y concepto "Pago de inicio
     de contrato"
+  - Todos los campos son opcionales, en caso de faltar alguno. Poner "(Sin información)"
 
 
   ## ! RESTRICCIONES
   - La primera fecha de pagos debe ser siempre el dia de inicio de contrato
-  - La fecha de culminación y entrega final, debe ser siempre la fecha de fin de contrato, aunque no cumpla con la forma de pago
   - La suma de todos los "totales" que aparecen en pagos debe ser SIEMPRE igual al total a pagar.
+  - La columna "total" debe ser calculada como suma_pagos / cantidad_pagos
 """
 neo = InstantNeo(api_key,model, agent_classifier_role, max_tokens=1200)
 

@@ -17,44 +17,25 @@ IA_CLAUDE_API_KEY = os.getenv('CLAUDE_API_KEY')
 
 # Define the API key and model for the InstantNeo client.
 claude_api_key= IA_CLAUDE_API_KEY
-haiku = "claude-3-sonnet-20240229" # Why? This model is more efficent to "view" the doc image
+haiku = "claude-3-haiku-20240307" # Why? This model is more efficent to "view" the doc image
 
 # Inicia el adaptador para el API de Anthropic
 proveedor = AnthropicAdapter()
 
 # Initialize the InstantNeo client and set the agent classifier role.
 role_antropic = """
-    Contexto:
-    Eres un agente encargado de examinar detalladamente un archivo y extraer la siguiente información:
+    ##! CONTEXTO
+    Eres un agente de IA, encargado de leer ordenes de compra, tu trabajo es realizar un resumen
+    del mismo. Incluir toda la inforamción relevante.
+    El resumen debe ser claro y conciso, y se debe complementar a la respuesta anterior.
 
-    Inicio de contrato: Indicar la fecha de inicio del servicio según el documento, debiendo estar en el formato DD-MM-AAAA.
-    Fin de contrato: Describir la fecha de vencimiento del contrato, incluyendo cualquier extensión potencial en las observaciones. Deberá estar en el formato DD-MM-AAAA.
-    Divisa: Seleccionar únicamente entre "SOLES" y "DÓLARES AMERICANOS".
-    Forma de pago: Especifique cómo se cobrará, ya sea cada cierto número de días, de contado, en cuotas, etc. Incluya cualquier explicación relevante en las observaciones.
-    Total a pagar: Busque dentro del documento la cantidad que el cliente debe pagar, asegurándose de que dicho total incluya todo tipo de impuestos (incluido el IVG) y descuentos aplicados.
-    Nombre del cliente: Identificar quién es el cliente mencionado en el documento o la empresa a la que se emitirá la orden de compra. Nota: evite usar "LILAB SAC" u otras variantes.
-    RUC del cliente: Registrar el RUC correspondiente al cliente. Nota: nunca utilice el RUC 20604947805.
-    Dirección del cliente: Anotar la dirección del cliente. Nota: evitar usar "Av. Javier Prado Oeste Nro. 757" u otros equivalentes.
-    Formato de respuesta esperado:
-    Se requiere que la respuesta esté siempre en el siguiente formato:
-
-    {
-        "inicio_contrato": "DD-MM-AAAA" o "No especificado",
-        "fin_contrato": "DD-MM-AAAA" o "No especificado",
-        "divisa": "SOLES" o "DÓLARES AMERICANOS" o "No especificado",
-        "forma_pago": ["texto"] o "No especificado",
-        "total_pagar": [número] o "No especificado",
-        "cliente_nombre": [texto] o "No especificado",
-        "cliente_ruc": [texto] o "No especificado",
-        "cliente_direccion": [texto] o "No especificado",
-        "comentario_adicional": ""
-    }
-    Instrucciones importantes:
-
-    Si algún dato falta, ingrese "No especificado".
-    Utilice los valores iniciales cuando sean provistos, incorporando esa información en su respuesta.
-    El resultado siempre debe mantenerse en formato JSON, utilizando solamente las llaves {" ": " "}. Evite agregar texto adicional.
+    La información que nunca debes quitar en caso de aparecer es:
+    - Fechas
+    - Montos a pagar (indicar si es con IGV o sin IGV)
+    - Items a facturar
+    - Nombre y ruc de las empresas
 """
+
 
 # Para crear la instancia necesitas llamar al adaptador en los parámetros
 agente = InstantNeo(claude_api_key, haiku, role_antropic, provider=proveedor, max_tokens=1200, temperature=0.2)
@@ -111,10 +92,10 @@ if __name__ == "__main__":
         #         break
         
         respuesta_neo = agente.run(prompt=f"""
-            Junto a la respuesta anterior:
+            La respuesta anterior es:
             {ultima_respuesta}
 
-            Complete la información faltante con la siguiente imagen de un documento
+            El documento es:
         """, img=local_image_path)
 
         respuesta_anterior.append(respuesta_neo)
